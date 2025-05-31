@@ -1,0 +1,194 @@
+{% extends "certificates/base.html" %}
+
+{% block title %}
+    {% if certificate %}
+        {% if is_valid %}Valid{% else %}Invalid{% endif %} Certificate - Verification
+    {% else %}
+        Certificate Verification Error
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg {% if certificate %}{% if is_valid %}border-success{% else %}border-danger{% endif %}{% elif error_type %}border-warning{% endif %}">
+                <div class="card-header {% if certificate %}{% if is_valid %}bg-success{% else %}bg-danger{% endif %}{% elif error_type %}bg-warning{% endif %} text-white py-3">
+                    <h2 class="card-title text-center mb-0">
+                        <i class="bi bi-shield-check me-2"></i>Certificate Verification
+                    </h2>
+                </div>
+                
+                <div class="card-body p-4">
+                {% if certificate %}
+                    {% if is_valid %}
+                        <div class="alert alert-success text-center">
+                            <h4 class="alert-heading">
+                                <i class="bi bi-check-circle-fill me-2"></i>Valid Certificate
+                            </h4>
+                            <p class="mb-0">{{ validity_info.message }}</p>
+                            {% if validity_info.details %}
+                                <small class="d-block mt-2">{{ validity_info.details }}</small>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger text-center">
+                            <h4 class="alert-heading">
+                                <i class="bi bi-x-circle-fill me-2"></i>
+                                {% if validity_info.status == 'pending' %}
+                                    Not Yet Valid
+                                {% elif validity_info.status == 'expired' %}
+                                    Expired Certificate
+                                {% else %}
+                                    Invalid Certificate
+                                {% endif %}
+                            </h4>
+                            <p class="mb-0">{{ validity_info.message }}</p>
+                            {% if validity_info.details %}
+                                <small class="d-block mt-2">{{ validity_info.details }}</small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="certificate-details mt-4">
+                        <div class="card {% if not is_valid %}border-danger{% endif %}">
+                            <div class="card-header {% if not is_valid %}bg-danger text-white{% else %}bg-light{% endif %}">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>Certificate Details
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" width="30%">Certificate ID:</th>
+                                            <td>{{ certificate.certificate_id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Student Name:</th>
+                                            <td>{{ certificate.student.user.get_full_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Course:</th>
+                                            <td>{{ certificate.course.name }}</td>
+                                        </tr>
+                                        {% if certificate.grade %}
+                                        <tr>
+                                            <th scope="row">Grade:</th>
+                                            <td>
+                                                {{ certificate.grade }} 
+                                                {% if certificate.score %}
+                                                    (Score: {{ certificate.score }}%)
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <th scope="row">Issue Date:</th>
+                                            <td>{{ certificate.issue_date|date:"F d, Y" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Valid From:</th>
+                                            <td>{{ certificate.start_date|date:"F d, Y" }}</td>
+                                        </tr>
+                                        {% if certificate.end_date %}
+                                        <tr>
+                                            <th scope="row">Valid Until:</th>
+                                            <td>{{ certificate.end_date|date:"F d, Y" }}</td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <th scope="row">Status:</th>
+                                            <td>
+                                                <div class="alert alert-{% if is_valid %}success{% else %}danger{% endif %} mb-0 py-1">
+                                                    {{ validity_message }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {% if is_valid %}
+                            <div class="text-center mt-4">                                <a href="{% url 'certificates:view_certificate' certificate.certificate_id %}" 
+                                   class="btn btn-primary">
+                                    <i class="bi bi-file-pdf me-2"></i>View Certificate
+                                </a>
+                                <a href="{% url 'certificates:verify' %}?certificate_id={{ certificate.certificate_id }}" 
+                                   class="btn btn-secondary ms-2">
+                                    <i class="bi bi-arrow-repeat me-2"></i>Verify Again
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning mt-4">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Note:</strong> Since this certificate is invalid, you cannot view or download it.
+                                If you believe this is an error, please contact the issuing authority.
+                            </div>
+                        {% endif %}
+                    </div>                {% else %}
+                    <div class="text-center">
+                        <div class="alert alert-warning">
+                            <h4 class="alert-heading mb-3">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                {% if error_type == 'missing_id' %}
+                                    Missing Certificate ID
+                                {% elif error_type == 'invalid_format' %}
+                                    Invalid Certificate Format
+                                {% elif error_type == 'not_found' %}
+                                    Certificate Not Found
+                                {% else %}
+                                    Verification Error
+                                {% endif %}
+                            </h4>
+                            {% if error %}
+                                <p class="mb-3">{{ error }}</p>
+                            {% endif %}
+                            {% if help_text %}
+                                <hr>
+                                <p class="mb-0 text-muted"><small>{{ help_text }}</small></p>
+                            {% endif %}
+                        </div>
+
+                        {% if certificate_id %}
+                            <div class="alert alert-info">
+                                <strong>Attempted Certificate ID:</strong><br>
+                                <code class="user-select-all">{{ certificate_id }}</code>
+                            </div>
+                        {% endif %}
+
+                        <div class="mt-4">
+                            <h5 class="mb-3">What you can do:</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Double-check if you copied the complete certificate ID
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Try scanning the QR code again from the certificate
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Contact the certificate issuer if you believe this is an error
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{% url 'certificates:verify' %}" class="btn btn-primary">
+                                <i class="bi bi-arrow-repeat me-2"></i>Try Another Certificate
+                            </a>
+                            <a href="{% url 'certificates:home' %}" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-house me-2"></i>Go to Homepage
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "certificates/base.html" %}
+
+{% block title %}Available Courses{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Available Courses</h1>
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ course.name }}</h5>
+                <p class="card-text">{{ course.description }}</p>
+                <p class="text-muted">Duration: {{ course.duration }} hours</p>
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:certificates_course_change' course.id %}" class="btn btn-warning">Edit Course</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center">No courses available at the moment.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

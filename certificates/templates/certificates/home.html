@@ -1,0 +1,31 @@
+{% extends "certificates/base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h1>Welcome to Certificate System</h1>
+    <p class="lead">Access professional certifications for your courses</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Available Courses</h5>
+                <p class="card-text">Browse through our available courses and start your learning journey.</p>
+                <a href="{% url 'certificates:course_list' %}" class="btn btn-primary">View Courses</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">My Certificates</h5>
+                <p class="card-text">View and download your earned certificates.</p>
+                <a href="{% url 'certificates:dashboard' %}" class="btn btn-success">View My Certificates</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

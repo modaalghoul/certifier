@@ -1,0 +1,10 @@
+Django>=4.2.0
+Pillow  # for image processing
+reportlab  # for PDF generation
+django-ipware  # for IP address handling
+qrcode  # for QR code generation
+gunicorn  # production server
+whitenoise  # for serving static files
+python-dotenv  # for environment variables
+psycopg2-binary  # for PostgreSQL support
+dj-database-url  # for database URL configuration

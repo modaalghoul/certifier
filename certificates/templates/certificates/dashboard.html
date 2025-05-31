@@ -1,0 +1,53 @@
+{% extends "certificates/base.html" %}
+
+{% block title %}My Certificates{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Certificates</h1>
+
+<div class="row">
+    {% for certificate in certificates %}    <div class="col-md-6 mb-4">
+        <div class="card {% if not certificate.is_valid %}border-danger{% endif %}">
+            <div class="card-header {% if not certificate.is_valid %}bg-danger text-white{% endif %}">
+                {% if certificate.is_valid %}
+                    <i class="bi bi-check-circle-fill text-success"></i> Valid Certificate
+                {% else %}
+                    <i class="bi bi-x-circle-fill"></i> Invalid Certificate
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ certificate.course.name }}</h5>
+                <p class="card-text">
+                    <strong>Certificate ID:</strong> {{ certificate.certificate_id }}<br>
+                    <strong>Issue Date:</strong> {{ certificate.issue_date|date:"F d, Y" }}
+                </p>
+                <div class="btn-group">
+                    {% if certificate.is_valid %}
+                        <a href="{% url 'certificates:view_certificate' certificate.certificate_id %}" class="btn btn-primary">
+                            <i class="bi bi-file-pdf"></i> View Certificate
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="bi bi-file-pdf"></i> Certificate Invalid
+                        </button>
+                    {% endif %}                    <a href="{% url 'certificates:verify' %}?certificate_id={{ certificate.certificate_id }}" class="btn btn-info">
+                        <i class="bi bi-shield-check"></i> Verify
+                    </a>
+                </div>
+                {% if not certificate.is_valid %}
+                    <div class="alert alert-danger mt-3 mb-0">
+                        <small><i class="bi bi-exclamation-triangle-fill"></i> This certificate has been marked as invalid or revoked.</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            You haven't earned any certificates yet. Check out our <a href="{% url 'certificates:course_list' %}">available courses</a>.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
