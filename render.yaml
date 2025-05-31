@@ -5,9 +5,9 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       python manage.py makemigrations
-      python manage.py migrate
+      python manage.py migrate --noinput
       python manage.py collectstatic --noinput
-      python manage.py createsuperuser --noinput || true
+      echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@example.com', 'adminpassword123') if not User.objects.filter(username='admin').exists() else None" | python manage.py shell
     startCommand: gunicorn certifier.wsgi:application
     envVars:
       - key: PYTHON_VERSION
@@ -28,6 +28,8 @@ services:
         value: "adminpassword123"
       - key: DJANGO_SUPERUSER_EMAIL
         value: "admin@example.com"
+      - key: SECRET_KEY
+        generateValue: true
     autoDeploy: true
     dependencies:
       - type: postgresql
