@@ -27,6 +27,11 @@ services:
         sync: false
       - key: DJANGO_SUPERUSER_EMAIL
         sync: false
+    autoDeploy: true
+    dependencies:
+      - type: postgresql
+        name: certifier-db
+        plan: free
 
 databases:
   - name: certifier-db
