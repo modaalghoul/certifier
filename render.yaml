@@ -7,6 +7,7 @@ services:
       python manage.py makemigrations
       python manage.py migrate
       python manage.py collectstatic --noinput
+      python manage.py createsuperuser --noinput || true
     startCommand: gunicorn certifier.wsgi:application
     envVars:
       - key: PYTHON_VERSION
@@ -22,11 +23,11 @@ services:
       - key: DEBUG
         value: "False"
       - key: DJANGO_SUPERUSER_USERNAME
-        sync: false
+        value: "admin"
       - key: DJANGO_SUPERUSER_PASSWORD
-        sync: false
+        value: "adminpassword123"
       - key: DJANGO_SUPERUSER_EMAIL
-        sync: false
+        value: "admin@example.com"
     autoDeploy: true
     dependencies:
       - type: postgresql
