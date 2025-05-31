@@ -155,19 +155,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Create static directory if it doesn't exist
+STATIC_DIR = BASE_DIR / 'static'
+STATIC_DIR.mkdir(exist_ok=True)
+
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    STATIC_DIR,
 ]
 
-# Ensure static files are properly collected
-import os
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
+
+# Ensure Whitenoise can find files
+WHITENOISE_ROOT = STATIC_ROOT
 
 # Media files
 MEDIA_URL = 'media/'
@@ -196,3 +202,25 @@ LOGOUT_URL = 'logout'
 SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
