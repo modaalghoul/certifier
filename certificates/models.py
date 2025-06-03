@@ -60,7 +60,7 @@ class Certificate(models.Model):
         # Add the certificate ID as a query parameter
         verification_url = f"{verification_url}?certificate_id={self.certificate_id}"
         # Make the URL absolute by adding the domain
-        absolute_url = f"https://certifier.onrender.com/{verification_url}"
+        absolute_url = f"https://certifier.onrender.com{verification_url}"
         qr.add_data(absolute_url)
         qr.make(fit=True)
 
