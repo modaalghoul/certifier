@@ -43,11 +43,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-o2id#zefdj1geo&l4z93#ryso1
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Handle allowed hosts
-RAILWAY_STATIC_URL = os.getenv('RAILWAY_STATIC_URL')
-if RAILWAY_STATIC_URL:
-    ALLOWED_HOSTS = ['.railway.app', RAILWAY_STATIC_URL]
-else:
-    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
 INSTALLED_APPS = [

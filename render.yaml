@@ -2,6 +2,7 @@ services:
   - type: web
     name: certifier
     env: python
+    plan: free
     buildCommand: |
       pip install -r requirements.txt
       python manage.py makemigrations
@@ -22,19 +23,17 @@ services:
           property: connectionString
       - key: DEBUG
         value: "False"
+      - key: SECRET_KEY
+        generateValue: true
       - key: DJANGO_SUPERUSER_USERNAME
         value: "admin"
       - key: DJANGO_SUPERUSER_PASSWORD
         value: "adminpassword123"
       - key: DJANGO_SUPERUSER_EMAIL
         value: "admin@example.com"
-      - key: SECRET_KEY
-        generateValue: true
     autoDeploy: true
     dependencies:
-      - type: postgresql
-        name: certifier-db
-        plan: free
+      - name: certifier-db
 
 databases:
   - name: certifier-db
